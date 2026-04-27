@@ -1,11 +1,11 @@
 package com.servlet;
 
-import java.io.*;
+import java.io.IOException;
 import java.util.List;
 
 import javax.servlet.*;
-import javax.servlet.http.*;
 import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.*;
 
 import com.dao.ProductDAO;
 import com.model.Product;
@@ -17,28 +17,44 @@ public class ReportServlet extends HttpServlet {
             throws ServletException, IOException {
 
         try {
-            // GET INPUTS FROM FORM
             String category = request.getParameter("category");
             String priceStr = request.getParameter("price");
 
             double price = 0;
 
-            //  SAFE PRICE CONVERSION
-            if (priceStr != null && !priceStr.trim().isEmpty()) {
+            //  VALIDATION
+            if (priceStr != null && !priceStr.isEmpty()) {
+
                 price = Double.parseDouble(priceStr);
+
+                if (price < 0) {
+                    request.setAttribute("priceError", "Price cannot be negative!");
+                    request.getRequestDispatcher("report_form.jsp").forward(request, response);
+                    return;
+                }
             }
 
-            //  CALL DAO METHOD (FILTERED DATA)
+            // OPTIONAL: category validation
+            if (category != null && category.trim().isEmpty()) {
+                request.setAttribute("categoryError", "Category cannot be empty!");
+                request.getRequestDispatcher("report_form.jsp").forward(request, response);
+                return;
+            }
+
+            //  FETCH DATA
             List<Product> list = ProductDAO.getFilteredProducts(category, price);
 
-            // SEND DATA TO JSP
             request.setAttribute("list", list);
+            request.getRequestDispatcher("report_result.jsp").forward(request, response);
 
-            RequestDispatcher rd = request.getRequestDispatcher("report_result.jsp");
-            rd.forward(request, response);
+        } catch (NumberFormatException e) {
+            request.setAttribute("priceError", "Invalid price format!");
+            request.getRequestDispatcher("report_form.jsp").forward(request, response);
 
         } catch (Exception e) {
             e.printStackTrace();
+            request.setAttribute("error", "Something went wrong!");
+            request.getRequestDispatcher("report_form.jsp").forward(request, response);
         }
     }
 }
