@@ -7,8 +7,8 @@ import com.model.Product;
 
 public class ProductDAO {
 
-    // CONNECTION
-    public static Connection getConnection() throws Exception {
+    Connection getCon() throws Exception {
+
         Class.forName("com.mysql.cj.jdbc.Driver");
 
         return DriverManager.getConnection(
@@ -18,177 +18,244 @@ public class ProductDAO {
         );
     }
 
-    //  INSERT PRODUCT
-    public static int addProduct(Product p) throws Exception {
+    // ADD PRODUCT
+    public void add(Product p) throws Exception {
 
-        Connection con = getConnection();
+        Connection c = getCon();
 
-        String sql = "INSERT INTO Products VALUES (?,?,?,?,?)";
+        PreparedStatement ps = c.prepareStatement(
+            "insert into Products(ProductName,Category,Price,Quantity) values(?,?,?,?)"
+        );
 
-        PreparedStatement ps = con.prepareStatement(sql);
-
-        ps.setInt(1, p.getProductId());
-        ps.setString(2, p.getProductName());
-        ps.setString(3, p.getCategory());
-        ps.setDouble(4, p.getPrice());
-        ps.setInt(5, p.getQuantity());
-
-        int status = ps.executeUpdate();
-
-        con.close(); //  important
-
-        return status;
-    }
-
-    // UPDATE PRODUCT
-    public static int updateProduct(Product p) throws Exception {
-
-        Connection con = getConnection();
-
-        String sql = "UPDATE Products SET ProductName=?, Category=?, Price=?, Quantity=? WHERE ProductID=?";
-
-        PreparedStatement ps = con.prepareStatement(sql);
-
-        ps.setString(1, p.getProductName());
+        ps.setString(1, p.getName());
         ps.setString(2, p.getCategory());
         ps.setDouble(3, p.getPrice());
         ps.setInt(4, p.getQuantity());
-        ps.setInt(5, p.getProductId());
 
-        int status = ps.executeUpdate();
+        ps.executeUpdate();
+    }
 
-        con.close();
+    // DISPLAY PRODUCTS
+    public List<Product> getAll() throws Exception {
 
-        return status;
+        List<Product> list = new ArrayList<>();
+
+        Connection c = getCon();
+
+        Statement s = c.createStatement();
+
+        ResultSet rs = s.executeQuery(
+            "select * from Products"
+        );
+
+        while(rs.next()) {
+
+            Product p = new Product();
+
+            p.setId(rs.getInt(1));
+            p.setName(rs.getString(2));
+            p.setCategory(rs.getString(3));
+            p.setPrice(rs.getDouble(4));
+            p.setQuantity(rs.getInt(5));
+
+            list.add(p);
+        }
+
+        return list;
     }
 
     // DELETE PRODUCT
-    public static int deleteProduct(int id) throws Exception {
+    public void delete(int id) throws Exception {
 
-        Connection con = getConnection();
+        Connection c = getCon();
 
-        String sql = "DELETE FROM Products WHERE ProductID=?";
-
-        PreparedStatement ps = con.prepareStatement(sql);
+        PreparedStatement ps = c.prepareStatement(
+            "delete from Products where ProductID=?"
+        );
 
         ps.setInt(1, id);
 
-        int status = ps.executeUpdate();
+        ps.executeUpdate();
+    }
 
-        con.close();
+    // UPDATE PRODUCT
+    public boolean update(Product p) throws Exception {
+
+        boolean status = false;
+
+        Connection c = getCon();
+
+        PreparedStatement ps = c.prepareStatement(
+
+            "update Products set ProductName=?,Category=?,Price=?,Quantity=? where ProductID=?"
+        );
+
+        ps.setString(1, p.getName());
+        ps.setString(2, p.getCategory());
+        ps.setDouble(3, p.getPrice());
+        ps.setInt(4, p.getQuantity());
+        ps.setInt(5, p.getId());
+
+        int rows = ps.executeUpdate();
+
+        if(rows > 0){
+            status = true;
+        }
 
         return status;
     }
 
-    //  DISPLAY ALL PRODUCTS
-    public static List<Product> getAllProducts() throws Exception {
+    // GET PRODUCT BY ID
+    public Product getProductById(int id) throws Exception {
 
-        Connection con = getConnection();
+        Product p = null;
 
-        String sql = "SELECT * FROM Products";
+        Connection c = getCon();
 
-        PreparedStatement ps = con.prepareStatement(sql);
+        PreparedStatement ps = c.prepareStatement(
+            "select * from Products where ProductID=?"
+        );
+
+        ps.setInt(1, id);
 
         ResultSet rs = ps.executeQuery();
 
+        if(rs.next()) {
+
+            p = new Product();
+
+            p.setId(rs.getInt(1));
+            p.setName(rs.getString(2));
+            p.setCategory(rs.getString(3));
+            p.setPrice(rs.getDouble(4));
+            p.setQuantity(rs.getInt(5));
+        }
+
+        return p;
+    }
+
+    // PRICE REPORT
+    public List<Product> priceReport(double price)
+    throws Exception {
+
         List<Product> list = new ArrayList<>();
+
+        Connection c = getCon();
+
+        PreparedStatement ps = c.prepareStatement(
+            "select * from Products where Price>?"
+        );
+
+        ps.setDouble(1, price);
+
+        ResultSet rs = ps.executeQuery();
 
         while(rs.next()) {
 
             Product p = new Product();
 
-            p.setProductId(rs.getInt("ProductID"));
-            p.setProductName(rs.getString("ProductName"));
-            p.setCategory(rs.getString("Category"));
-            p.setPrice(rs.getDouble("Price"));
-            p.setQuantity(rs.getInt("Quantity"));
+            p.setId(rs.getInt(1));
+            p.setName(rs.getString(2));
+            p.setCategory(rs.getString(3));
+            p.setPrice(rs.getDouble(4));
+            p.setQuantity(rs.getInt(5));
 
             list.add(p);
         }
 
-        con.close();
-
         return list;
     }
 
-    // FILTERED REPORT
-    public static List<Product> getFilteredProducts(String category, double price) throws Exception {
-
-        Connection con = getConnection();
-
-        String sql = "SELECT * FROM Products WHERE 1=1";
-
-        if(category != null && !category.trim().isEmpty()) {
-            sql += " AND Category = ?";
-        }
-
-        if(price > 0) {
-            sql += " AND Price > ?";
-        }
-
-        PreparedStatement ps = con.prepareStatement(sql);
-
-        int i = 1;
-
-        if(category != null && !category.trim().isEmpty()) {
-            ps.setString(i++, category);
-        }
-
-        if(price > 0) {
-            ps.setDouble(i++, price);
-        }
-
-        ResultSet rs = ps.executeQuery();
+    // CATEGORY REPORT
+    public List<Product> categoryReport(String category)
+    throws Exception {
 
         List<Product> list = new ArrayList<>();
+
+        Connection c = getCon();
+
+        PreparedStatement ps = c.prepareStatement(
+            "select * from Products where Category=?"
+        );
+
+        ps.setString(1, category);
+
+        ResultSet rs = ps.executeQuery();
 
         while(rs.next()) {
 
             Product p = new Product();
 
-            p.setProductId(rs.getInt("ProductID"));
-            p.setProductName(rs.getString("ProductName"));
-            p.setCategory(rs.getString("Category"));
-            p.setPrice(rs.getDouble("Price"));
-            p.setQuantity(rs.getInt("Quantity"));
+            p.setId(rs.getInt(1));
+            p.setName(rs.getString(2));
+            p.setCategory(rs.getString(3));
+            p.setPrice(rs.getDouble(4));
+            p.setQuantity(rs.getInt(5));
 
             list.add(p);
         }
 
-        con.close();
-
         return list;
     }
 
-    // NEW: TOP N PRODUCTS (IMPORTANT FEATURE)
-    public static List<Product> getTopProducts(int limit) throws Exception {
+    // TOP PRODUCTS
+    public List<Product> topProducts(int n)
+    		throws Exception {
 
-        Connection con = getConnection();
+    		    List<Product> list = new ArrayList<>();
 
-        String sql = "SELECT * FROM Products ORDER BY Quantity DESC LIMIT ?";
+    		    Connection c = getCon();
 
-        PreparedStatement ps = con.prepareStatement(sql);
-        ps.setInt(1, limit);
+    		    PreparedStatement ps = c.prepareStatement(
 
-        ResultSet rs = ps.executeQuery();
+    		    "select * from Products order by Quantity desc limit ?");
 
-        List<Product> list = new ArrayList<>();
+    		    ps.setInt(1, n);
 
-        while(rs.next()) {
+    		    ResultSet rs = ps.executeQuery();
 
-            Product p = new Product();
+    		    while(rs.next()) {
 
-            p.setProductId(rs.getInt("ProductID"));
-            p.setProductName(rs.getString("ProductName"));
-            p.setCategory(rs.getString("Category"));
-            p.setPrice(rs.getDouble("Price"));
-            p.setQuantity(rs.getInt("Quantity"));
+    		        Product p = new Product();
 
-            list.add(p);
+    		        p.setId(rs.getInt(1));
+    		        p.setName(rs.getString(2));
+    		        p.setCategory(rs.getString(3));
+    		        p.setPrice(rs.getDouble(4));
+    		        p.setQuantity(rs.getInt(5));
+
+    		        list.add(p);
+    		    }
+
+    		    return list;
+    		}
+ // NEXT PRODUCT ID
+    public int getNextProductId()
+    throws Exception {
+
+        int id = 1;
+
+        Connection c = getCon();
+
+        Statement s = c.createStatement();
+
+        ResultSet rs = s.executeQuery(
+        "select max(ProductID) from Products");
+
+        if(rs.next()) {
+
+            id = rs.getInt(1) + 1;
         }
 
-        con.close();
-
-        return list;
+        return id;
     }
-}
+
+    }
+
+
+
+
+
+
+
+

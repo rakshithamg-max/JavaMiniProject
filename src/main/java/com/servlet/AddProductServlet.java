@@ -1,78 +1,72 @@
-package com.servlet;
+ package com.servlet;
 
 import java.io.IOException;
-import javax.servlet.ServletException;
+
+import javax.servlet.*;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.*;
 
 import com.dao.ProductDAO;
 import com.model.Product;
-@WebServlet("/add")
+
+@WebServlet("/AddProductServlet")
 public class AddProductServlet extends HttpServlet {
 
-    protected void doPost(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
+protected void doPost(HttpServletRequest req,
+HttpServletResponse res)
+throws ServletException, IOException {
 
-        try {
-            String idStr = request.getParameter("id");
-            String name = request.getParameter("name");
-            String category = request.getParameter("category");
-            String priceStr = request.getParameter("price");
-            String qtyStr = request.getParameter("quantity");
+try{
 
-            //  EMPTY VALIDATION
-            if (idStr == null || idStr.trim().isEmpty() ||
-                name == null || name.trim().isEmpty() ||
-                category == null || category.trim().isEmpty() ||
-                priceStr == null || priceStr.trim().isEmpty() ||
-                qtyStr == null || qtyStr.trim().isEmpty()) {
+Product p=new Product();
 
-                request.setAttribute("error", "All fields are required!");
-                request.getRequestDispatcher("productadd.jsp").forward(request, response);
-                return;
-            }
+p.setName(req.getParameter("name"));
 
-            int id = Integer.parseInt(idStr);
-            double price = Double.parseDouble(priceStr);
-            int quantity = Integer.parseInt(qtyStr);
+p.setCategory(req.getParameter("category"));
 
-            //  VALUE VALIDATION
-            if (id <= 0) {
-                request.setAttribute("error", "Invalid Product ID!");
-                request.getRequestDispatcher("productadd.jsp").forward(request, response);
-                return;
-            }
+p.setPrice(
+Double.parseDouble(req.getParameter("price")));
 
-            if (price <= 0) {
-                request.setAttribute("error", "Price must be greater than 0!");
-                request.getRequestDispatcher("productadd.jsp").forward(request, response);
-                return;
-            }
+p.setQuantity(
+Integer.parseInt(req.getParameter("quantity")));
 
-            if (quantity < 0) {
-                request.setAttribute("error", "Quantity cannot be negative!");
-                request.getRequestDispatcher("productadd.jsp").forward(request, response);
-                return;
-            }
+if(p.getPrice()<=0){
 
-            //  INSERT
-            Product p = new Product();
-            p.setProductId(id);
-            p.setProductName(name);
-            p.setCategory(category);
-            p.setPrice(price);
-            p.setQuantity(quantity);
+req.setAttribute("error",
+"Price must be greater than 0");
 
-            ProductDAO.addProduct(p);
+RequestDispatcher rd=
+req.getRequestDispatcher("productadd.jsp");
 
-            response.sendRedirect("success.jsp");
+rd.forward(req,res);
 
-        } catch (NumberFormatException e) {
-            request.setAttribute("error", "Invalid number format!");
-            request.getRequestDispatcher("productadd.jsp").forward(request, response);
-        } catch (Exception e) {
-            request.setAttribute("error", "Something went wrong!");
-            request.getRequestDispatcher("productadd.jsp").forward(request, response);
-        }
-    }
+return;
+}
+
+if(p.getQuantity()<=0){
+
+req.setAttribute("error",
+"Quantity must be greater than 0");
+
+RequestDispatcher rd=
+req.getRequestDispatcher("productadd.jsp");
+
+rd.forward(req,res);
+
+return;
+}
+
+ProductDAO dao=new ProductDAO();
+
+dao.add(p);
+
+res.sendRedirect("index.jsp?msg=added");
+
+}
+catch(Exception e){
+
+e.printStackTrace();
+
+}
+}
 }

@@ -10,51 +10,30 @@ import javax.servlet.http.*;
 import com.dao.ProductDAO;
 import com.model.Product;
 
-@WebServlet("/report")
+@WebServlet("/ReportServlet")
 public class ReportServlet extends HttpServlet {
 
-    protected void doPost(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
+    protected void doPost(HttpServletRequest req,
+    HttpServletResponse res)throws ServletException,IOException {
 
-        try {
-            String category = request.getParameter("category");
-            String priceStr = request.getParameter("price");
+        try{
 
-            double price = 0;
+            double price=
+            Double.parseDouble(req.getParameter("price"));
 
-            //  VALIDATION
-            if (priceStr != null && !priceStr.isEmpty()) {
+            ProductDAO dao=new ProductDAO();
 
-                price = Double.parseDouble(priceStr);
+            List<Product> list=dao.priceReport(price);
 
-                if (price < 0) {
-                    request.setAttribute("priceError", "Price cannot be negative!");
-                    request.getRequestDispatcher("report_form.jsp").forward(request, response);
-                    return;
-                }
-            }
+            req.setAttribute("data",list);
 
-            // OPTIONAL: category validation
-            if (category != null && category.trim().isEmpty()) {
-                request.setAttribute("categoryError", "Category cannot be empty!");
-                request.getRequestDispatcher("report_form.jsp").forward(request, response);
-                return;
-            }
+            RequestDispatcher rd=
+            req.getRequestDispatcher("report_result.jsp");
 
-            //  FETCH DATA
-            List<Product> list = ProductDAO.getFilteredProducts(category, price);
+            rd.forward(req,res);
 
-            request.setAttribute("list", list);
-            request.getRequestDispatcher("report_result.jsp").forward(request, response);
-
-        } catch (NumberFormatException e) {
-            request.setAttribute("priceError", "Invalid price format!");
-            request.getRequestDispatcher("report_form.jsp").forward(request, response);
-
-        } catch (Exception e) {
+        }catch(Exception e){
             e.printStackTrace();
-            request.setAttribute("error", "Something went wrong!");
-            request.getRequestDispatcher("report_form.jsp").forward(request, response);
         }
     }
 }

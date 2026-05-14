@@ -1,67 +1,81 @@
-<%@ page import="java.util.*,com.dao.ProductDAO,com.model.Product" %>
+<%@ page import="java.util.*,com.model.Product"%>
+
 <!DOCTYPE html>
 <html>
 <head>
+
 <title>Product List</title>
 
 <style>
-    body {
-        font-family: Arial, sans-serif;
-        background: linear-gradient(to right, #2193b0, #6dd5ed);
-        margin: 0;
-        padding: 0;
-    }
 
-    .container {
-        width: 85%;
-        margin: 40px auto;
-        background: white;
-        padding: 25px;
-        border-radius: 12px;
-        box-shadow: 0px 0px 15px rgba(0,0,0,0.2);
-        text-align: center;
-    }
+body{
+font-family:Arial;
+background:#f2f2f2;
+margin:0;
+padding:0;
+}
 
-    h2 {
-        margin-bottom: 20px;
-        color: #333;
-    }
+.container{
+width:90%;
+margin:40px auto;
+background:white;
+padding:25px;
+border-radius:12px;
+box-shadow:0 0 10px rgba(0,0,0,0.2);
+}
 
-    table {
-        width: 100%;
-        border-collapse: collapse;
-        margin-top: 20px;
-    }
+h2{
+text-align:left;
+color:#243b55;
+margin-bottom:25px;
+}
 
-    th {
-        background: #2193b0;
-        color: white;
-        padding: 12px;
-        text-align: center;
-    }
+table{
+width:100%;
+border-collapse:collapse;
+}
 
-    td {
-        padding: 10px;
-        border-bottom: 1px solid #ddd;
-        text-align: center;
-    }
+/* UPDATED ALIGNMENT */
+th{
+background:#243b55;
+color:white;
+padding:12px;
+text-align:left;
+}
 
-    tr:hover {
-        background-color: #f1f1f1;
-    }
+td{
+padding:10px;
+text-align:left;
+border-bottom:1px solid #ddd;
+}
 
-    a {
-        display: inline-block;
-        margin-top: 20px;
-        text-decoration: none;
-        color: #2193b0;
-        font-weight: bold;
-    }
+tr:hover{
+background:#f5f5f5;
+}
 
-    a:hover {
-        text-decoration: underline;
-    }
+.noData{
+text-align:left;
+font-size:20px;
+color:red;
+margin-top:30px;
+}
+
+a{
+display:inline-block;
+margin-top:20px;
+text-decoration:none;
+background:#243b55;
+color:white;
+padding:10px 20px;
+border-radius:6px;
+}
+
+a:hover{
+background:#141e30;
+}
+
 </style>
+
 </head>
 
 <body>
@@ -69,6 +83,22 @@
 <div class="container">
 
 <h2>Product List</h2>
+
+<%
+List<Product> list =
+(List<Product>)request.getAttribute("data");
+
+if(list == null || list.size() == 0){
+%>
+
+<div class="noData">
+No Products Available
+</div>
+
+<%
+}
+else{
+%>
 
 <table>
 
@@ -81,14 +111,12 @@
 </tr>
 
 <%
-List<Product> list = ProductDAO.getAllProducts();
-
 for(Product p : list){
 %>
 
 <tr>
-<td><%=p.getProductId()%></td>
-<td><%=p.getProductName()%></td>
+<td><%=p.getId()%></td>
+<td><%=p.getName()%></td>
 <td><%=p.getCategory()%></td>
 <td><%=p.getPrice()%></td>
 <td><%=p.getQuantity()%></td>
@@ -100,7 +128,15 @@ for(Product p : list){
 
 </table>
 
-<a href="index.jsp"> Back to Home</a>
+<%
+}
+%>
+
+<br>
+
+<a href="index.jsp">
+Back To Home
+</a>
 
 </div>
 

@@ -1,75 +1,65 @@
-<%@ page language="java" contentType="text/html; charset=UTF-8" %>
+ <!-- ========================= -->
+<!-- productupdate.jsp -->
+<!-- ========================= -->
+
+<%@ page import="com.model.Product"%>
+
+<%
+Product p=(Product)request.getAttribute("p");
+%>
+
 <!DOCTYPE html>
 <html>
 <head>
+<meta charset="UTF-8">
 <title>Update Product</title>
 
 <style>
-    body {
-        font-family: Arial, sans-serif;
-        background: linear-gradient(to right, #ff9966, #ff5e62);
-        margin: 0;
-        padding: 0;
-    }
 
-    .container {
-        width: 420px;
-        margin: 60px auto;
-        background: white;
-        padding: 25px;
-        border-radius: 12px;
-        box-shadow: 0px 0px 15px rgba(0,0,0,0.2);
-        text-align: center;
-    }
+body{
+font-family:Arial;
+background:linear-gradient(to right,#134e5e,#71b280);
+}
 
-    h2 {
-        margin-bottom: 20px;
-    }
+.container{
+width:450px;
+margin:40px auto;
+background:white;
+padding:30px;
+border-radius:15px;
+box-shadow:0 0 15px rgba(0,0,0,0.3);
+}
 
-    input {
-        width: 90%;
-        padding: 10px;
-        margin: 6px 0;
-        border-radius: 6px;
-        border: 1px solid #ccc;
-    }
+h2{
+text-align:center;
+margin-bottom:20px;
+}
 
-    button {
-        width: 95%;
-        padding: 10px;
-        margin-top: 10px;
-        background: #ff5e62;
-        color: white;
-        border: none;
-        border-radius: 6px;
-        cursor: pointer;
-        font-size: 16px;
-    }
+input{
+width:100%;
+padding:12px;
+margin-top:10px;
+border-radius:8px;
+border:1px solid gray;
+}
 
-    button:hover {
-        background: #e14c50;
-    }
+button{
+width:100%;
+padding:12px;
+margin-top:20px;
+background:#134e5e;
+color:white;
+border:none;
+border-radius:8px;
+cursor:pointer;
+font-size:16px;
+}
 
-    .error {
-        color: red;
-        font-size: 13px;
-        display: block;
-        text-align: left;
-        margin-left: 5%;
-    }
+button:hover{
+background:#0f3d47;
+}
 
-    .main-error {
-        color: red;
-        font-weight: bold;
-        margin-bottom: 10px;
-    }
 
-    a {
-        display: block;
-        margin-top: 15px;
-        text-decoration: none;
-        color: blue;
-    }
 </style>
 </head>
 
@@ -77,50 +67,84 @@
 
 <div class="container">
 
-<h2>Update Product</h2>
+<h2>Fetch Product</h2>
 
-<!-- ⭐ GENERAL ERROR -->
-<%
-String error = (String) request.getAttribute("error");
-if(error != null){
-%>
-    <div class="main-error"><%= error %></div>
-<%
-}
-%>
+<form action="FetchProductServlet" method="post">
 
-<form action="update" method="post">
+<input type="hidden"
+name="page"
+value="update">
 
-<!-- ID -->
-<input type="number" name="id" placeholder="Product ID" 
-       value="${param.id}">
-<span class="error">${idError}</span>
+<input type="number"
+name="id"
+placeholder="Enter Product ID"
+required>
 
-<!-- NAME -->
-<input type="text" name="name" placeholder="New Product Name" 
-       value="${param.name}">
-<span class="error">${nameError}</span>
-
-<!-- CATEGORY -->
-<input type="text" name="category" placeholder="New Category" 
-       value="${param.category}">
-<span class="error">${categoryError}</span>
-
-<!-- PRICE -->
-<input type="number" name="price" placeholder="New Price" 
-       value="${param.price}">
-<span class="error">${priceError}</span>
-
-<!-- QUANTITY -->
-<input type="number" name="quantity" placeholder="New Quantity" 
-       value="${param.quantity}">
-<span class="error">${qtyError}</span>
-
-<button type="submit">Update Product</button>
+<button type="submit">
+Fetch Product
+</button>
 
 </form>
 
-<a href="index.jsp">⬅ Back to Home</a>
+<hr>
+
+<h2>Update Product</h2>
+
+<form action="UpdateProductServlet"
+method="post">
+
+<input type="number"
+name="id"
+value="<%= (p!=null)?p.getId():"" %>"
+readonly>
+
+<input type="text"
+name="name"
+value="<%= (p!=null)?p.getName():"" %>">
+
+<select name="category" required style="width:100%;padding:12px;margin-top:10px;border-radius:8px;border:1px solid gray;">
+
+<option value="">-- Select Category --</option>
+
+<option <%= (p!=null && "Electronics".equals(p.getCategory())) ? "selected" : "" %>>Electronics</option>
+<option <%= (p!=null && "Mobile Phones".equals(p.getCategory())) ? "selected" : "" %>>Mobile Phones</option>
+<option <%= (p!=null && "Laptops".equals(p.getCategory())) ? "selected" : "" %>>Laptops</option>
+<option <%= (p!=null && "Computer Accessories".equals(p.getCategory())) ? "selected" : "" %>>Computer Accessories</option>
+<option <%= (p!=null && "Home Appliances".equals(p.getCategory())) ? "selected" : "" %>>Home Appliances</option>
+<option <%= (p!=null && "Furniture".equals(p.getCategory())) ? "selected" : "" %>>Furniture</option>
+<option <%= (p!=null && "Clothing".equals(p.getCategory())) ? "selected" : "" %>>Clothing</option>
+<option <%= (p!=null && "Footwear".equals(p.getCategory())) ? "selected" : "" %>>Footwear</option>
+<option <%= (p!=null && "Books".equals(p.getCategory())) ? "selected" : "" %>>Books</option>
+<option <%= (p!=null && "Sports & Fitness".equals(p.getCategory())) ? "selected" : "" %>>Sports & Fitness</option>
+<option <%= (p!=null && "Beauty Products".equals(p.getCategory())) ? "selected" : "" %>>Beauty Products</option>
+<option <%= (p!=null && "Groceries".equals(p.getCategory())) ? "selected" : "" %>>Groceries</option>
+<option <%= (p!=null && "Toys & Games".equals(p.getCategory())) ? "selected" : "" %>>Toys & Games</option>
+<option <%= (p!=null && "Kitchen Items".equals(p.getCategory())) ? "selected" : "" %>>Kitchen Items</option>
+<option <%= (p!=null && "Watches".equals(p.getCategory())) ? "selected" : "" %>>Watches</option>
+<option <%= (p!=null && "Bags & Accessories".equals(p.getCategory())) ? "selected" : "" %>>Bags & Accessories</option>
+<option <%= (p!=null && "Stationery".equals(p.getCategory())) ? "selected" : "" %>>Stationery</option>
+<option <%= (p!=null && "Automobile Accessories".equals(p.getCategory())) ? "selected" : "" %>>Automobile Accessories</option>
+<option <%= (p!=null && "Health Care".equals(p.getCategory())) ? "selected" : "" %>>Health Care</option>
+<option <%= (p!=null && "Jewellery".equals(p.getCategory())) ? "selected" : "" %>>Jewellery</option>
+
+</select>
+
+<input type="number"
+name="price"
+value="<%= (p!=null)?p.getPrice():"" %>">
+
+<input type="number"
+name="quantity"
+value="<%= (p!=null)?p.getQuantity():"" %>">
+
+<button type="submit">
+Update Product
+</button>
+
+</form>
+<a href="index.jsp" class="back-btn">
+Back To Home
+</a>
 
 </div>
 

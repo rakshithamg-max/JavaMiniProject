@@ -1,68 +1,90 @@
 package com.servlet;
 
 import java.io.IOException;
-import javax.servlet.ServletException;
+import javax.servlet.*;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.*;
 
 import com.dao.ProductDAO;
+import com.model.Product;
 
-@WebServlet("/delete")
+@WebServlet("/DeleteProductServlet")
 public class DeleteProductServlet extends HttpServlet {
 
-    protected void doPost(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
+    protected void doPost(HttpServletRequest req,
+    HttpServletResponse res)
+    throws ServletException, IOException {
 
         try {
-            String idStr = request.getParameter("id");
 
-            boolean hasError = false;
+            String idStr = req.getParameter("id");
 
-            //  EMPTY VALIDATION
-            if (idStr == null || idStr.trim().isEmpty()) {
-                request.setAttribute("idError", "Product ID is required");
-                hasError = true;
-            }
+            // VALIDATION 1
+            if(idStr == null || idStr.trim().equals("")){
 
-            if (hasError) {
-                request.getRequestDispatcher("productdelete.jsp").forward(request, response);
+                req.setAttribute("error", "Product ID is required");
+
+                RequestDispatcher rd =
+                req.getRequestDispatcher("productdelete.jsp");
+
+                rd.forward(req, res);
                 return;
             }
 
             int id = Integer.parseInt(idStr);
 
-            //  VALUE VALIDATION
-            if (id <= 0) {
-                request.setAttribute("idError", "Product ID must be greater than 0");
-                request.getRequestDispatcher("productdelete.jsp").forward(request, response);
+            // VALIDATION 2
+            if(id <= 0){
+
+                req.setAttribute("error", "Invalid Product ID");
+
+                RequestDispatcher rd =
+                req.getRequestDispatcher("productdelete.jsp");
+
+                rd.forward(req, res);
                 return;
             }
 
-            //  DELETE FROM DB
-            int status = ProductDAO.deleteProduct(id);
+            ProductDAO dao = new ProductDAO();
 
-            if (status > 0) {
-                response.sendRedirect("delete_success.jsp");
-            } else {
-                request.setAttribute("error", "Product not found!");
-                request.getRequestDispatcher("productdelete.jsp").forward(request, response);
+            // VALIDATION 3
+            Product p = dao.getProductById(id);
+
+            if(p == null){
+
+                req.setAttribute("error", "Product ID does not exist");
+
+                RequestDispatcher rd =
+                req.getRequestDispatcher("productdelete.jsp");
+
+                rd.forward(req, res);
+                return;
             }
 
-        } catch (NumberFormatException e) {
-            request.setAttribute("idError", "ID must be a valid number!");
-            request.getRequestDispatcher("productdelete.jsp").forward(request, response);
-
-        } catch (Exception e) {
-            e.printStackTrace();
-            request.setAttribute("error", "Something went wrong!");
-            request.getRequestDispatcher("productdelete.jsp").forward(request, response);
+            // DELETE PRODUCT
+            dao.delete(id);
+            res.sendRedirect("index.jsp?msg=deleted");
+           
         }
-    }
+        catch(NumberFormatException e){
 
-    // HANDLE DIRECT ACCESS
-    protected void doGet(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
+            req.setAttribute("error", "Only numbers allowed");
 
-        response.sendRedirect("productdelete.jsp");
+            RequestDispatcher rd =
+            req.getRequestDispatcher("productdelete.jsp");
+
+            rd.forward(req, res);
+        }
+        catch(Exception e){
+
+            e.printStackTrace();
+
+            req.setAttribute("error", "Something went wrong");
+
+            RequestDispatcher rd =
+            req.getRequestDispatcher("productdelete.jsp");
+
+            rd.forward(req, res);
+        }
     }
 }

@@ -1,95 +1,59 @@
-<%@ page language="java" contentType="text/html; charset=UTF-8" %>
+ <!-- ========================= -->
+<!-- report_form.jsp -->
+<!-- ========================= -->
+
 <!DOCTYPE html>
 <html>
 <head>
-<title>Report Form</title>
+<meta charset="UTF-8">
+<title>Reports</title>
 
 <style>
-    body {
-        font-family: Arial, sans-serif;
-        background: linear-gradient(to right, #4facfe, #00f2fe);
-        margin: 0;
-        padding: 0;
-    }
 
-    .container {
-        width: 500px;
-        margin: 60px auto;
-        background: white;
-        padding: 25px;
-        border-radius: 12px;
-        box-shadow: 0px 0px 15px rgba(0,0,0,0.2);
-    }
+body{
+font-family:Arial;
+background:linear-gradient(to right,#4b6cb7,#182848);
+}
 
-    h2 {
-        text-align: center;
-        margin-bottom: 15px;
-        color: #333;
-    }
+.container{
+width:450px;
+margin:40px auto;
+background:white;
+padding:30px;
+border-radius:15px;
+}
 
-    input {
-        width: 95%;
-        padding: 10px;
-        margin: 6px 0;
-        border-radius: 6px;
-        border: 1px solid #ccc;
-    }
+h2{
+text-align:center;
+}
 
-    input:focus {
-        border-color: #007BFF;
-        outline: none;
-        box-shadow: 0 0 5px rgba(0,123,255,0.5);
-    }
+input{
+width:100%;
+padding:12px;
+margin-top:10px;
+border-radius:8px;
+border:1px solid gray;
+}
 
-    button {
-        width: 100%;
-        padding: 10px;
-        margin-top: 10px;
-        background: #007BFF;
-        color: white;
-        border: none;
-        border-radius: 6px;
-        font-size: 15px;
-        cursor: pointer;
-    }
+button{
+width:100%;
+padding:12px;
+margin-top:15px;
+background:#182848;
+color:white;
+border:none;
+border-radius:8px;
+font-size:16px;
+}
 
-    button:hover {
-        background: #0056b3;
-    }
+button:hover{
+background:#101b31;
+}
 
-    hr {
-        margin: 25px 0;
-    }
+hr{
+margin:25px 0;
+}
 
-    .error {
-        color: red;
-        font-size: 13px;
-        margin-left: 5px;
-    }
-
-    .main-error {
-        color: red;
-        font-weight: bold;
-        text-align: center;
-        margin-bottom: 10px;
-    }
-
-    .section {
-        margin-bottom: 20px;
-    }
-
-    a {
-        display: block;
-        text-align: center;
-        margin-top: 15px;
-        text-decoration: none;
-        color: #007BFF;
-        font-weight: bold;
-    }
-
-    a:hover {
-        text-decoration: underline;
-    }
 </style>
 </head>
 
@@ -97,51 +61,100 @@
 
 <div class="container">
 
-    <!-- ⭐ GENERAL ERROR -->
-    <div class="main-error">${error}</div>
+<h2>Price Report</h2>
 
-    <!-- ⭐ FILTER REPORT -->
-    <div class="section">
-        <h2>Filter Products</h2>
+<form action="ReportServlet"
+method="post">
 
-        <form action="report" method="post">
+<input type="number"
+name="price"
+placeholder="Enter Minimum Price"
+required>
 
-            <!-- CATEGORY -->
-            <input type="text" name="category"
-                   placeholder="Enter Category"
-                   value="${param.category}">
-            <span class="error">${categoryError}</span>
+<button type="submit">
+Generate Report
+</button>
 
-            <!-- PRICE -->
-            <input type="number" name="price"
-                   placeholder="Enter Minimum Price"
-                   value="${param.price}">
-            <span class="error">${priceError}</span>
+</form>
 
-            <button type="submit">Generate Report</button>
+<hr>
 
-        </form>
-    </div>
+<h2>Category Report</h2>
 
-    <hr>
+<form action="ReportCriteriaServlet"
+method="post">
 
-    <!-- ⭐ TOP N REPORT -->
-    <div class="section">
-        <h2>Top N Products (By Quantity)</h2>
+<select name="category" required>
 
-        <form action="topProducts" method="post">
+<option value="">
+-- Select Category --
+</option>
 
-            <input type="number" name="limit"
-                   placeholder="Enter N Value"
-                   value="${param.limit}">
-            <span class="error">${limitError}</span>
+<option>Electronics</option>
 
-            <button type="submit">Show Top Products</button>
+<option>Mobile Phones</option>
 
-        </form>
-    </div>
+<option>Laptops</option>
 
-    <a href="index.jsp">⬅ Back to Home</a>
+<option>Computer Accessories</option>
+
+<option>Home Appliances</option>
+
+<option>Furniture</option>
+
+<option>Clothing</option>
+
+<option>Footwear</option>
+
+<option>Books</option>
+
+<option>Sports & Fitness</option>
+
+<option>Beauty Products</option>
+
+<option>Groceries</option>
+
+<option>Toys & Games</option>
+
+<option>Kitchen Items</option>
+
+<option>Watches</option>
+
+<option>Bags & Accessories</option>
+
+<option>Stationery</option>
+
+<option>Automobile Accessories</option>
+
+<option>Health Care</option>
+
+<option>Jewellery</option>
+
+</select>
+
+<button type="submit">
+Category Report
+</button>
+
+</form>
+
+<hr>
+
+<h2>Top Products Report</h2>
+
+<form action="TopProductsServlet"
+method="post">
+
+<input type="number"
+name="count"
+placeholder="Enter Top Count"
+required>
+
+<button type="submit">
+Top Products
+</button>
+
+</form>
 
 </div>
 

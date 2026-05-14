@@ -1,23 +1,39 @@
-package com.servlet;
+ package com.servlet;
+
+import java.io.IOException;
+import java.util.List;
 
 import javax.servlet.*;
-import javax.servlet.http.*;
-import java.io.*;
 import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.*;
 
-@WebServlet("/reportCriteria")
+import com.dao.ProductDAO;
+import com.model.Product;
+
+@WebServlet("/ReportCriteriaServlet")
 public class ReportCriteriaServlet extends HttpServlet {
 
-    protected void doGet(HttpServletRequest request, HttpServletResponse response)
-            throws IOException, ServletException {
+    protected void doPost(HttpServletRequest req,
+    HttpServletResponse res)throws ServletException,IOException {
 
-        request.getRequestDispatcher("report_form.jsp").forward(request, response);
-    }
+        try{
 
-    // ⭐ OPTIONAL SAFETY
-    protected void doPost(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
+            String category=req.getParameter("category");
 
-        response.sendRedirect("report_form.jsp");
+            ProductDAO dao=new ProductDAO();
+
+            List<Product> list=
+            dao.categoryReport(category);
+
+            req.setAttribute("data",list);
+
+            RequestDispatcher rd=
+            req.getRequestDispatcher("report_result.jsp");
+
+            rd.forward(req,res);
+
+        }catch(Exception e){
+            e.printStackTrace();
+        }
     }
 }
