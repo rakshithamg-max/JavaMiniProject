@@ -6,3 +6,4 @@ OUTPUTS OF PROJECT
 5.https://github.com/rakshithamg-max/JavaMiniProject/blob/javaminiproject/delete1.png
 6.https://github.com/rakshithamg-max/JavaMiniProject/blob/javaminiproject/display.png
 7.https://github.com/rakshithamg-max/JavaMiniProject/blob/javaminiproject/prize%20report.png
+8.https://github.com/rakshithamg-max/JavaMiniProject/blob/javaminiproject/report.png
