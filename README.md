@@ -8,3 +8,4 @@ OUTPUTS OF PROJECT
 7.https://github.com/rakshithamg-max/JavaMiniProject/blob/javaminiproject/prize%20report.png
 8.https://github.com/rakshithamg-max/JavaMiniProject/blob/javaminiproject/report.png
 9.https://github.com/rakshithamg-max/JavaMiniProject/blob/javaminiproject/top%20report.png
+10.https://github.com/rakshithamg-max/JavaMiniProject/blob/javaminiproject/catetory.png
