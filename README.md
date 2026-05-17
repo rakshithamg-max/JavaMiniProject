@@ -4,3 +4,4 @@ OUTPUTS OF PROJECT
 3.https://github.com/rakshithamg-max/JavaMiniProject/blob/javaminiproject/update.png
 4.https://github.com/rakshithamg-max/JavaMiniProject/blob/javaminiproject/delete.png
 5.https://github.com/rakshithamg-max/JavaMiniProject/blob/javaminiproject/delete1.png
+6.https://github.com/rakshithamg-max/JavaMiniProject/blob/javaminiproject/display.png
